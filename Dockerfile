@@ -32,11 +32,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   tmux \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Node.js 20.19.5 from NodeSource
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
 # Install Claude CLI to system location
 RUN curl -fsSL https://claude.ai/install.sh | bash && \
     cp /root/.local/bin/claude /usr/local/bin/ && \
