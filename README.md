@@ -4,7 +4,7 @@ A secure, isolated container environment for running [Claude Code](https://claud
 
 ## Overview
 
-This project provides a containerized environment for Claude Code with strict network egress controls. The setup ensures Claude Code can only access explicitly whitelisted domains, providing an additional layer of security for AI-assisted development workflows.
+This project provides a containerized environment for Claude Code with strict network egress controls. The setup ensures Claude Code can only access explicitly whitelisted domains, providing an additional layer of security for AI-assisted development workflows. This is intended to be ideal for [YOLO mode](https://simonwillison.net/2025/Sep/30/designing-agentic-loops/#the-joy-of-yolo-mode).
 
 Built for Apple's container runtime but adaptable to other platforms with modifications.
 
