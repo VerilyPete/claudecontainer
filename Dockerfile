@@ -50,21 +50,30 @@ RUN groupadd --gid $USER_GID $USERNAME && \
     useradd --uid $USER_UID --gid $USER_GID -m $USERNAME && \
     echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
+# Copy and set up firewall script
+COPY init-firewall.sh /usr/local/bin/
+USER root
+RUN chmod +x /usr/local/bin/init-firewall.sh && \
+    echo "$USERNAME ALL=(root) NOPASSWD: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/claude-firewall && \
+    chmod 0440 /etc/sudoers.d/claude-firewall
+
 # Create directories
 RUN mkdir -p /commandhistory /workspace && \
     touch /commandhistory/.bash_history /commandhistory/.zsh_history && \
     chown -R $USERNAME:$USERNAME /commandhistory /workspace
 
-# Create entrypoint script to fix permissions after volume mounts
+# Create entrypoint script to fix permissions after volume mounts and run firewall init
 RUN echo '#!/bin/sh' > /entrypoint.sh && \
+    echo 'sudo /usr/local/bin/init-firewall.sh 2>/dev/null || true' >> /entrypoint.sh && \
     echo 'sudo chown -R claude:claude /commandhistory 2>/dev/null || true' >> /entrypoint.sh && \
     echo 'exec "$@"' >> /entrypoint.sh && \
     chmod +x /entrypoint.sh
 
+USER $USERNAME
+
 ENV DEVCONTAINER=true
 WORKDIR /workspace
-USER $USERNAME
-ENTRYPOINT ["/entrypoint.sh"]
+
 
 # Set PATH
 ENV PATH="/home/$USERNAME/.local/bin:$PATH"
@@ -90,4 +99,5 @@ RUN echo 'export HISTFILE=/commandhistory/.zsh_history' >> /home/$USERNAME/.zshr
     echo 'source <(fzf --zsh)' >> /home/$USERNAME/.zshrc && \
     chown $USERNAME:$USERNAME /home/$USERNAME/.zshrc
 
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/bin/zsh"]
