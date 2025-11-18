@@ -1,0 +1,11 @@
+container_network = "192.168.65.0/24"
+table <allowed_destinations> persist file "/etc/pf.anchors/allowed_destinations"
+
+pass quick proto udp from $container_network to any port 53
+pass quick proto tcp from $container_network to any port 22
+pass quick from $container_network to $container_network
+pass quick proto tcp from $container_network to <allowed_destinations> keep state
+pass quick proto udp from $container_network to <allowed_destinations> keep state
+
+block return from $container_network to any
+block return from any to $container_network
