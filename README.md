@@ -156,6 +156,7 @@ This is necessary because the container network subnet can change between system
 
 ### `populate_allowed_ips.sh`
 Resolves DNS from domain names, then fetches and aggregates allowed destination IPs from sources contained in the file.
+After resolving the IPs and IP ranges, they're written to /etc/pf.anchors/allowed_destinations which is read when the firewall starts and loaded into the allowed_destinations table in pf.
 
 **Sources:**
 - GitHub API metadata (web, API, git endpoints)
@@ -203,6 +204,13 @@ pass quick proto udp from $container_network to <allowed_destinations> keep stat
 # Block everything else
 block return from $container_network to any
 block return from any to $container_network
+```
+
+claude_firewall.conf sits in /etc and tells pf where to find the claude_firewall anchor's ruleset
+
+```config
+anchor "claude_firewall"
+load anchor "claude_firewall" from "/etc/pf.anchors/claude_firewall"
 ```
 
 
