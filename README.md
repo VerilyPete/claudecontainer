@@ -155,7 +155,7 @@ Detects the current container network subnet and updates the firewall configurat
 This is necessary because the container network subnet can change between system restarts.
 
 ### `populate_allowed_ips.sh`
-Fetches and aggregates allowed destination IPs from various sources.
+Resolves DNS from domain names, then fetches and aggregates allowed destination IPs from sources contained in the file.
 
 **Sources:**
 - GitHub API metadata (web, API, git endpoints)
@@ -205,24 +205,6 @@ block return from $container_network to any
 block return from any to $container_network
 ```
 
-### Adding Custom Destinations
-To allow additional destinations, edit `populate_allowed_ips.sh` and add IP ranges or domains:
-
-```bash
-# Add custom CIDR ranges
-echo "203.0.113.0/24" | sudo tee -a "$OUTPUT_FILE" > /dev/null
-
-# Add domains (will be resolved to IPs)
-for domain in "example.com"; do
-    # DNS resolution logic here
-done
-```
-
-Then reload the firewall:
-```bash
-sudo ./populate_allowed_ips.sh
-sudo pfctl -f /etc/pf.anchors/claude_firewall
-```
 
 ## Customization
 
